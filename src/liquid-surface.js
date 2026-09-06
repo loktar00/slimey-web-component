@@ -59,7 +59,6 @@ export class FluidSurface extends THREE.Mesh {
       random: () => (seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296,
     });
     this.isolation = 0.24;
-    this.depthScale = 1;
   }
   rebuild(particles, solids = [], particleSpacing = 0.05, obstacle = null) {
     const { nx, ny, sx, sy, density, extension, relief, materialU, materialV, materialMass } = this;
@@ -281,9 +280,7 @@ export class FluidSurface extends THREE.Mesh {
         fine = this._noise(u * 2.3, v * 3.1);
       const wrinkle = (0.035 * broad + 0.008 * fine) * Math.pow(thinning, 0.8);
       height[k] =
-        this.depthScale *
-        Math.max(0.012, film + rim + relief[k] + wrinkle) *
-        Math.sqrt(1 - Math.exp(-d / 0.055));
+        Math.max(0.012, film + rim + relief[k] + wrinkle) * Math.sqrt(1 - Math.exp(-d / 0.055));
     }
     this._smooth(height, true);
     // Normals come from this reconstructed height, including its curved rim.

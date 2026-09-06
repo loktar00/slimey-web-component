@@ -17,7 +17,6 @@
   <body>
     <slimey-goo
       id="goo"
-      mode="drip"
       material="slime"
       color="#00ffaa"
       viscosity="0.88"
@@ -59,10 +58,6 @@
 
       <section class="controls" data-goo-ui aria-label="Slime controls">
         <div class="appearance-row">
-          <div class="mode-switch" role="group" aria-label="Playground mode">
-            <button type="button" data-mode="drip" aria-pressed="true">Slime Time</button>
-            <button type="button" data-mode="text" aria-pressed="false">Slime Text</button>
-          </div>
           <div class="palette" role="group" aria-label="Slime color">
             <span class="palette-label" id="color-name">Neon Green</span>
             <button
@@ -98,12 +93,12 @@
             <button
               type="button"
               class="color-swatch"
-              data-color="#a04dff"
-              data-color-name="Neon Violet"
-              style="--swatch: #a04dff"
-              aria-label="Neon Violet"
+              data-color="#5900ff"
+              data-color-name="Neon Purple"
+              style="--swatch: #5900ff"
+              aria-label="Neon Purple"
               aria-pressed="false"
-              title="Neon Violet"
+              title="Neon Purple"
             ></button>
             <button
               type="button"
@@ -178,7 +173,7 @@
 
       <div class="bottom-left" data-goo-ui>
         <p id="interaction-hint">Pull the slime. Move the container.</p>
-        <span id="mode-hint">A little gravity, then let it settle.</span>
+        <span id="settling-hint">A little gravity, then let it settle.</span>
       </div>
       <div class="bottom-right" data-goo-ui>
         <span id="motion-label">LIVE SLIME</span>
@@ -198,7 +193,7 @@
         <h2 id="component-title">Put a little<br />slime on it.</h2>
         <p>
           A reusable web component with real fluid motion, mouse interaction, and a color for every
-          mood. Let it flow around your page, or turn the words themselves into slime.
+          mood. Let it settle over your words and flow around your page.
         </p>
         <div class="actions">
           <button type="button" id="download">
@@ -212,7 +207,7 @@
       <div class="code-card">
         <div class="code-heading"><span>JUST ADD SLIME</span><span>HTML</span></div>
         <pre><code id="code-example">&lt;slimey-goo
-  mode="drip"
+
   color="#c4ff00"
   viscosity="0.88"&gt;
 
@@ -235,10 +230,10 @@
       </article>
       <article>
         <span>02</span>
-        <h3>Give your words a wiggle.</h3>
+        <h3>Let it settle in.</h3>
         <p>
-          Switch to Slime Text to turn the letters into the material. Zero gravity keeps the words
-          suspended while you stretch and play.
+          Slime starts on top of your text. Pull it to wake the gravity, then let go and watch it
+          settle against the page.
         </p>
       </article>
       <article>

@@ -39,8 +39,7 @@ function runFluidThread() {
         fluid = new ViscousFluid(data.options);
         if (data.options.seed) {
           fluid.seed(data.options.seed);
-          if (data.options.seed.mode !== 'text')
-            fluid.setObstacleMask(data.options.seed.mask, { drape: true });
+          fluid.setObstacleMask(data.options.seed.mask, { drape: true });
         }
       } else {
         if (data.mask) fluid.setObstacleMask(data.mask, { drape: true });

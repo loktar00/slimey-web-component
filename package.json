@@ -20,6 +20,6 @@
     "prettier": "3.9.6",
     "vite": "^8.2.2"
   },
-  "description": "Interactive viscous slime and fluid text for the web, rendered with Three.js.",
+  "description": "Interactive viscous slime for DOM text and containers, rendered with Three.js.",
   "license": "MIT"
 }

@@ -17,12 +17,9 @@ const componentSource = [
 
 const goo = document.getElementById('goo');
 const toast = document.getElementById('toast');
-const headline = document.querySelector('.playground h1');
-const headlineEnd = document.querySelector('.headline-two');
 const dripsButton = document.getElementById('drips');
 const pourButton = document.getElementById('pour');
 const pauseButton = document.getElementById('pause');
-const modeButtons = [...document.querySelectorAll('[data-mode]')];
 const materialButtons = [...document.querySelectorAll('[data-material]')];
 const colorButtons = [...document.querySelectorAll('[data-color]')];
 const customColor = document.getElementById('custom-color');
@@ -37,13 +34,10 @@ function notify(message) {
 }
 
 function syncDrips() {
-  const isText = goo.getAttribute('mode') === 'text';
   const enabled = goo.hasAttribute('drips');
-  dripsButton.disabled = isText;
   dripsButton.setAttribute('aria-pressed', String(enabled));
   dripsButton.textContent = enabled ? 'Drips on' : 'Drips off';
-  dripsButton.title = isText ? 'Drips are available in Slime Time mode' : 'Toggle continuous drips';
-  pourButton.hidden = isText;
+  dripsButton.title = 'Toggle continuous drips';
 }
 
 function syncMotion() {
@@ -59,22 +53,19 @@ function syncMotion() {
 }
 
 function exampleMarkup() {
-  const mode = goo.getAttribute('mode') || 'drip';
-  const words = mode === 'text' ? 'Slime Text' : 'Slime Time.';
   return [
     '<slimey-goo',
-    '  mode="' + mode + '"',
     '  material="' + goo.getAttribute('material') + '"',
     '  color="' + goo.getAttribute('color') + '"',
     '  viscosity="' + goo.getAttribute('viscosity') + '"',
     '  stickiness="' +
       goo.getAttribute('stickiness') +
       '"' +
-      (goo.hasAttribute('drips') && mode === 'drip' ? ' drips' : '') +
+      (goo.hasAttribute('drips') ? ' drips' : '') +
       '>',
     '',
     '  <h1 data-goo data-goo-solid="text">',
-    '    ' + words,
+    '    Slime Time.',
     '  </h1>',
     '',
     '</slimey-goo>',
@@ -83,30 +74,6 @@ function exampleMarkup() {
 
 function syncExample() {
   document.getElementById('code-example').textContent = exampleMarkup();
-}
-
-for (const button of modeButtons) {
-  button.addEventListener('click', () => {
-    const mode = button.dataset.mode;
-    if (goo.getAttribute('mode') === mode) return;
-    const isText = mode === 'text';
-    // Update the DOM before the component captures and seeds its new mode.
-    headlineEnd.textContent = isText ? 'Text' : 'Time.';
-    headline.setAttribute('aria-label', isText ? 'Slime Text' : 'Slime Time.');
-    document.title = (isText ? 'Slime Text' : 'Slime Time') + ' — loktar00';
-    goo.removeAttribute('drips');
-    goo.setAttribute('mode', mode);
-    modeButtons.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
-    document.getElementById('interaction-hint').textContent = isText
-      ? 'The words are slime. Give them a pull.'
-      : 'Pull the slime. Move the container.';
-    document.getElementById('mode-hint').textContent = isText
-      ? 'Pull to wake it. Let go to settle.'
-      : 'A little gravity, then let it settle.';
-    syncDrips();
-    syncExample();
-    requestAnimationFrame(() => goo.refresh());
-  });
 }
 
 for (const button of materialButtons) {
@@ -157,7 +124,6 @@ pauseButton.addEventListener('click', () => {
 reduced.addEventListener('change', syncMotion);
 
 dripsButton.addEventListener('click', () => {
-  if (goo.getAttribute('mode') === 'text') return;
   goo.toggleAttribute('drips', !goo.hasAttribute('drips'));
   syncDrips();
   syncExample();

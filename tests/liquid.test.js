@@ -204,7 +204,7 @@ test('budget recycling preserves mass and keeps merged parcels out of the narrow
   );
 });
 
-test('finite text fills glyphs and edge coatings preserve their supplied mass', () => {
+test('finite edge coatings preserve their supplied mass', () => {
   const f = new ViscousFluid({
     initial: 'empty',
     cellSize: 0.16,
@@ -219,19 +219,8 @@ test('finite text fills glyphs and edge coatings preserve their supplied mass', 
       if (Math.abs(px) < 1.7 && Math.abs(py) < 1.2 && (Math.abs(px) > 1.1 || Math.abs(py) > 0.65))
         mask[y * f.nx + x] = 1;
     }
-  f.seed({ mode: 'text', mask });
-  assert.ok(f.particles.length > 0);
-  for (const p of f.particles) {
-    const x = Math.round((p.x + 8) * f.inv),
-      y = Math.round((p.y + 4.4) * f.inv);
-    assert.equal(mask[y * f.nx + x], 1, 'text material begins inside the captured glyph');
-  }
-  const mass = totalMass(f);
-  advance(f, 120);
-  assert.ok(finite(f));
-  assert.ok(Math.abs(totalMass(f) - mass) < 1e-9);
   f.setObstacleMask(mask, { drape: true });
-  f.seed({ mode: 'drip', mask });
+  f.seed({ mask });
   f.gravity = 3.4;
   assert.ok(f.particles.length > 0);
   const dripMass = totalMass(f);

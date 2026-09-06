@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Inter+Tight:wght@500;600;700;750;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Inter+Tight:wght@700;750;800&display=swap');
 
 :root {
   font-family: 'DM Sans', Arial, sans-serif;
@@ -132,11 +132,6 @@ h1 span {
   left: 33%;
   top: 0.94em;
 }
-slimey-goo[mode='text'] h1 {
-  pointer-events: none;
-  font-weight: 600;
-  letter-spacing: -0.015em;
-}
 
 [data-goo-draggable] {
   user-select: none;
@@ -196,32 +191,12 @@ slimey-goo[data-dragging] [data-goo-draggable] {
   gap: 22px;
 }
 .appearance-row {
+  justify-content: center;
   padding-bottom: 15px;
   border-bottom: 1px solid var(--line);
 }
 .material-row {
   padding-top: 15px;
-}
-.mode-switch {
-  display: flex;
-  padding: 3px;
-  border-radius: 9px;
-  background: #424c2910;
-  flex-shrink: 0;
-}
-.mode-switch button {
-  border: 0;
-  border-radius: 6px;
-  padding: 8px 12px;
-  background: none;
-  font-size: 11px;
-  white-space: nowrap;
-  color: #737966;
-}
-.mode-switch button[aria-pressed='true'] {
-  background: var(--paper);
-  color: var(--ink);
-  box-shadow: 0 2px 5px #2938120c;
 }
 .palette {
   display: flex;
@@ -659,13 +634,6 @@ pre {
     flex-direction: column;
     gap: 15px;
     padding-bottom: 14px;
-  }
-  .mode-switch {
-    width: 100%;
-  }
-  .mode-switch button {
-    flex: 1;
-    font-size: 11px;
   }
   .palette {
     width: 100%;

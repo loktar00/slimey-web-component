@@ -47,13 +47,12 @@ function roundBox(ctx, x, y, w, h, r) {
  * data-goo: include simple text/boxes in the optical capture.
  * data-goo-solid: collide with a rounded DOM bounding box (also add data-goo).
  * data-goo-draggable: move a collider with pointer or arrow keys.
- * data-goo-solid="text": sticky glyph relief in drip mode; fluid letters in text mode.
+ * data-goo-solid="text": sticky glyph relief beneath the slime coating.
  */
 export class SlimeyGoo extends HTMLElement {
   static observedAttributes = [
     'material',
     'color',
-    'mode',
     'gravity',
     'friction',
     'viscosity',
@@ -83,7 +82,6 @@ export class SlimeyGoo extends HTMLElement {
     this._pointer = new THREE.Vector2();
     this._colliderIds = new WeakMap();
     this._nextCollider = 0;
-    this._hiddenText = new Map();
     this._needsSeed = true;
   }
   connectedCallback() {
@@ -277,7 +275,6 @@ export class SlimeyGoo extends HTMLElement {
           e.preventDefault();
           this._lost = true;
           this.setAttribute('data-fallback', '');
-          this._syncTextVisibility();
         },
         { signal },
       );
@@ -342,9 +339,6 @@ export class SlimeyGoo extends HTMLElement {
     this._transmissionUniforms.attenuationDistance.value = p.distance;
     this._dirty = true;
   }
-  get mode() {
-    return this.getAttribute('mode') === 'text' ? 'text' : 'drip';
-  }
   get gravity() {
     const raw = this.getAttribute('gravity'),
       value = raw === null ? 3.4 : Number(raw);
@@ -352,19 +346,16 @@ export class SlimeyGoo extends HTMLElement {
   }
   get friction() {
     const raw = this.getAttribute('friction'),
-      fallback = this.mode === 'text' ? 5 : 0,
-      value = raw === null ? fallback : Number(raw);
-    return Number.isFinite(value) ? clampSetting(value, 0, 20) : fallback;
+      value = raw === null ? 0 : Number(raw);
+    return Number.isFinite(value) ? clampSetting(value, 0, 20) : 0;
   }
   _effectiveGravity() {
     if (this.hasAttribute('gravity')) return this.gravity;
-    if (this.mode === 'text' && !this._textActivated) return 0;
     if (this._fluidGrab || this._movingElement) return this.gravity;
-    if (this.mode === 'text' && this._gravityStartedAt == null) return 0;
     // Give the coating time to drape, then remove acceleration without
     // stopping the solver or discarding its velocity and polymer stress.
     const elapsed = (this._fluid?.time || 0) - (this._gravityStartedAt || 0);
-    const t = clampSetting(this.mode === 'text' ? elapsed / 2 : (elapsed - 2) / 0.6, 0, 1);
+    const t = clampSetting((elapsed - 2) / 0.6, 0, 1);
     return this.gravity * (1 - t * t * (3 - 2 * t));
   }
   _restartGravity() {
@@ -375,32 +366,14 @@ export class SlimeyGoo extends HTMLElement {
     this._sync();
     if (name === 'quality') this._resize();
     if (name === 'drips' && value !== null) this._restartGravity();
-    if (name === 'mode') {
-      this._release();
-      this._needsSeed = true;
-      this._dirty = true;
-      this._interacted = false;
-      this._textActivated = false;
-      this._resize();
-    }
   }
   _resize() {
     if (!this._renderer) return;
     const r = this.getBoundingClientRect();
     if (r.width < 1 || r.height < 1) return;
-    if (
-      this.mode === 'text' &&
-      this._layoutWidth != null &&
-      (this._layoutWidth !== r.width || this._layoutHeight !== r.height)
-    ) {
-      this._needsSeed = true;
-      this._interacted = false;
-    }
-    this._layoutWidth = r.width;
-    this._layoutHeight = r.height;
     this._bounds = r;
     const aspect = r.width / r.height;
-    this._scaleX = this.mode === 'text' && r.width < 650 ? 1 : aspect / 1.6;
+    this._scaleX = aspect / 1.6;
     this._camera.left = -aspect * 4;
     this._camera.right = aspect * 4;
     this._camera.updateProjectionMatrix();
@@ -422,7 +395,7 @@ export class SlimeyGoo extends HTMLElement {
       s = this._captureScale,
       ctx = this._pageCanvas.getContext('2d');
     this._bounds = r;
-    this._syncTextVisibility();
+
     ctx.setTransform(s, 0, 0, s, 0, 0);
     ctx.fillStyle = this.getAttribute('backdrop') || '#f7f4e9';
     ctx.fillRect(0, 0, r.width, r.height);
@@ -483,12 +456,11 @@ export class SlimeyGoo extends HTMLElement {
         const ascent = m.fontBoundingBoxAscent || parseFloat(style.fontSize) * 0.8,
           descent = m.fontBoundingBoxDescent || parseFloat(style.fontSize) * 0.2;
         ctx.globalAlpha = el.getAttribute('data-goo-solid') === 'text' ? 0.8 : 1;
-        if (this.mode !== 'text' || el.getAttribute('data-goo-solid') !== 'text')
-          ctx.fillText(
-            text,
-            rect.left - r.left,
-            rect.top - r.top + (rect.height - ascent - descent) / 2 + ascent,
-          );
+        ctx.fillText(
+          text,
+          rect.left - r.left,
+          rect.top - r.top + (rect.height - ascent - descent) / 2 + ascent,
+        );
         ctx.globalAlpha = 1;
         if (el.getAttribute('data-goo-solid') === 'text') {
           mask.font = ctx.font;
@@ -510,17 +482,13 @@ export class SlimeyGoo extends HTMLElement {
         field[y * this._fluid.nx + x] =
           pixels[((this._fluid.ny - 1 - y) * this._fluid.nx + x) * 4 + 3] > 96 ? 1 : 0;
     this._glyphMask = field;
-    if (this.mode === 'text') {
-      this._fluid.obstacle = null;
-      this._fluid.obstacleMask = null;
-    } else this._fluid.setObstacleMask(field, { drape: true });
+    this._fluid.setObstacleMask(field, { drape: true });
     this._threadMaskDirty = true;
     if (this._needsSeed) {
-      const seedMask = field.some(Boolean) || this.mode === 'text' ? field : this._boxSeedMask();
-      this._seed = { mode: this.mode, mask: seedMask };
+      const seedMask = field.some(Boolean) ? field : this._boxSeedMask();
+      this._seed = { mask: seedMask };
       this._fluid.seed(this._seed);
-      this._textActivated = false;
-      this._gravityStartedAt = this.mode === 'text' ? null : 0;
+      this._gravityStartedAt = 0;
       this._fluid.gravity = this._effectiveGravity();
       this._startThread();
       this._needsSeed = false;
@@ -528,19 +496,18 @@ export class SlimeyGoo extends HTMLElement {
     }
   }
   _configureFluid() {
-    const narrow = this.clientWidth < 650,
-      isText = this.mode === 'text';
-    const cellSize = isText ? (narrow ? 0.04 : 0.08) : narrow ? 0.16 : 0.12;
+    const narrow = this.clientWidth < 650;
+    const cellSize = narrow ? 0.16 : 0.12;
     if (this._fluidOptions?.cellSize !== cellSize) {
       this._fluidOptions = {
         cellSize,
         maxParticles: narrow ? 10000 : 16000,
         initial: 'empty',
-        gravity: isText ? 0 : this.gravity,
+        gravity: this.gravity,
       };
       this._fluid = new ViscousFluid(this._fluidOptions);
     }
-    const resolution = narrow ? (isText ? 384 : 192) : 288;
+    const resolution = narrow ? 192 : 288;
     if (this._surface?.nx !== resolution) {
       if (this._surface) {
         this._scene.remove(this._surface);
@@ -549,32 +516,6 @@ export class SlimeyGoo extends HTMLElement {
       this._surface = new FluidSurface(this._material, resolution, { closed: false });
       this._surface.scale.set(this._scaleX || 1, Math.sqrt(160) / 12, 1);
       this._scene.add(this._surface);
-    }
-    // A tighter contour and shallower profile preserve counters and spacing.
-    this._surface.isolation = isText ? 0.54 : 0.24;
-    this._surface.depthScale = isText ? 0.55 : 1;
-  }
-  _syncTextVisibility() {
-    const hidden =
-      this.mode === 'text' && !this._lost && !this.hasAttribute('data-fallback')
-        ? new Set(
-            (this._targets || []).filter((el) => el.getAttribute('data-goo-solid') === 'text'),
-          )
-        : new Set();
-    for (const [el, original] of this._hiddenText) {
-      if (hidden.has(el)) continue;
-      el.style.opacity = original.opacity;
-      el.style.pointerEvents = original.pointerEvents;
-      this._hiddenText.delete(el);
-    }
-    for (const el of hidden) {
-      if (this._hiddenText.has(el)) continue;
-      this._hiddenText.set(el, {
-        opacity: el.style.opacity,
-        pointerEvents: el.style.pointerEvents,
-      });
-      el.style.opacity = '0';
-      el.style.pointerEvents = 'none';
     }
   }
   _boxSeedMask() {
@@ -660,7 +601,6 @@ export class SlimeyGoo extends HTMLElement {
     window.getSelection()?.removeAllRanges();
     this.setAttribute('data-dragging', '');
     this._interacted = true;
-    if (this._fluidGrab) this._textActivated = true;
     this._restartGravity();
   }
   _release() {
@@ -703,7 +643,7 @@ export class SlimeyGoo extends HTMLElement {
         viscosity: scalar(this, 'viscosity', 0.88),
         stickiness: scalar(this, 'stickiness', 0.96),
         flow: scalar(this, 'flow', 0.55),
-        emit: this.mode !== 'text' && this.hasAttribute('drips'),
+        emit: this.hasAttribute('drips'),
         gravity: this._effectiveGravity(),
         drag: this.friction,
         solids,
@@ -860,11 +800,6 @@ export class SlimeyGoo extends HTMLElement {
     this._resizeObserver?.disconnect();
     this._mutationObserver?.disconnect();
     this._intersectionObserver?.disconnect();
-    for (const [el, original] of this._hiddenText) {
-      el.style.opacity = original.opacity;
-      el.style.pointerEvents = original.pointerEvents;
-    }
-    this._hiddenText.clear();
     this._surface?.geometry.dispose();
     this._material?.dispose();
     this._pageTexture?.dispose();

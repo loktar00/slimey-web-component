@@ -96,7 +96,7 @@ export class ViscousFluid {
     const s = this.spacing;
     if (mode === 'empty') return;
     if (mask) {
-      this._seedGlyphs(mask, mode);
+      this._seedCoating(mask);
       return;
     }
     for (let row = 0; row < Math.ceil(6.0 / s); row++)
@@ -132,23 +132,8 @@ export class ViscousFluid {
         );
       }
   }
-  _seedGlyphs(mask, mode) {
+  _seedCoating(mask) {
     const { nx, ny, dx, bounds } = this;
-    if (mode === 'text') {
-      // Four material samples per occupied grid cell fill the actual glyph.
-      for (let y = 1; y < ny - 1; y++)
-        for (let x = 1; x < nx - 1; x++) {
-          if (!mask[y * nx + x]) continue;
-          for (const oy of [-0.25, 0.25])
-            for (const ox of [-0.25, 0.25]) {
-              const px = (x + ox) * dx - 8,
-                py = (y + oy) * dx - 4.4;
-              if (px > bounds.left && px < bounds.right && py > bounds.bottom && py < bounds.top)
-                this.add(px, py);
-            }
-        }
-      return;
-    }
     // Exposed upward edges receive a finite coating. Interior vertical runs
     // stay connected, while counters and spaces in the lettering stay open.
     const coating = new Uint8Array(nx * ny);
