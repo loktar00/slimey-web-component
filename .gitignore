@@ -1,0 +1,10 @@
+node_modules/
+.npm-cache/
+dist/
+.playwright-mcp/
+*.log
+artifacts/
+prototypes/
+/*.png
+.env
+.env.*
