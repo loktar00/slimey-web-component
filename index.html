@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f7f4e9" />
+    <meta
+      name="description"
+      content="Stretch, squish, and play with interactive slime. A Three.js web component by loktar00."
+    />
+    <title>Slime Time — loktar00</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23f7f4e9'/%3E%3Cpath d='M13 22c0-9 14-13 23-9s15 14 14 25-14 17-25 12S13 35 13 22' fill='%23c6cc55'/%3E%3Cellipse cx='24' cy='21' rx='7' ry='4' fill='%23fffef2'/%3E%3C/svg%3E"
+    />
+    <script type="module" crossorigin src="./assets/index-VofTuiJG.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Co4fbYum.css">
+  </head>
+  <body>
+    <slimey-goo
+      id="goo"
+      mode="drip"
+      material="slime"
+      color="#00ffaa"
+      viscosity="0.88"
+      stickiness="0.96"
+      flow="0.55"
+      backdrop="#f7f4e9"
+    >
+      <header class="masthead" data-goo-ui>
+        <a class="wordmark" href="https://github.com/loktar00" aria-label="loktar00 on GitHub"
+          >loktar00<span aria-hidden="true">↗</span></a
+        >
+        <nav aria-label="Main navigation">
+          <a href="#playground">Playground</a>
+          <a class="outline-link" href="#component"
+            >Get component <span aria-hidden="true">↗</span></a
+          >
+        </nav>
+      </header>
+
+      <main class="playground" id="playground">
+        <h1 aria-label="Slime Time.">
+          <span class="headline-one" data-goo data-goo-solid="text">Slime</span>
+          <span class="headline-two" data-goo data-goo-solid="text">Time.</span>
+        </h1>
+      </main>
+
+      <div
+        class="catcher"
+        data-goo
+        data-goo-solid
+        data-goo-draggable
+        data-goo-ui
+        tabindex="0"
+        role="group"
+        aria-label="Movable container. Drag into the slime, or use arrow keys."
+      >
+        Pull to stretch<span>Drag into the slime ↗</span>
+      </div>
+
+      <section class="controls" data-goo-ui aria-label="Slime controls">
+        <div class="appearance-row">
+          <div class="mode-switch" role="group" aria-label="Playground mode">
+            <button type="button" data-mode="drip" aria-pressed="true">Slime Time</button>
+            <button type="button" data-mode="text" aria-pressed="false">Slime Text</button>
+          </div>
+          <div class="palette" role="group" aria-label="Slime color">
+            <span class="palette-label" id="color-name">Neon Green</span>
+            <button
+              type="button"
+              class="color-swatch"
+              data-color="#c4ff00"
+              data-color-name="Neon Lime"
+              style="--swatch: #c4ff00"
+              aria-label="Neon Lime"
+              aria-pressed="false"
+              title="Neon Lime"
+            ></button>
+            <button
+              type="button"
+              class="color-swatch"
+              data-color="#ffb800"
+              data-color-name="Neon Amber"
+              style="--swatch: #ffb800"
+              aria-label="Neon Amber"
+              aria-pressed="false"
+              title="Neon Amber"
+            ></button>
+            <button
+              type="button"
+              class="color-swatch"
+              data-color="#ff26b9"
+              data-color-name="Neon Pink"
+              style="--swatch: #ff26b9"
+              aria-label="Neon Pink"
+              aria-pressed="false"
+              title="Neon Pink"
+            ></button>
+            <button
+              type="button"
+              class="color-swatch"
+              data-color="#a04dff"
+              data-color-name="Neon Violet"
+              style="--swatch: #a04dff"
+              aria-label="Neon Violet"
+              aria-pressed="false"
+              title="Neon Violet"
+            ></button>
+            <button
+              type="button"
+              class="color-swatch"
+              data-color="#00cfff"
+              data-color-name="Neon Blue"
+              style="--swatch: #00cfff"
+              aria-label="Neon Blue"
+              aria-pressed="false"
+              title="Neon Blue"
+            ></button>
+            <button
+              type="button"
+              class="color-swatch"
+              data-color="#00ffe0"
+              data-color-name="Neon Mint"
+              style="--swatch: #00ffe0"
+              aria-label="Neon Mint"
+              aria-pressed="false"
+              title="Neon Mint"
+            ></button>
+            <button
+              type="button"
+              class="color-swatch"
+              data-color="#00ffaa"
+              data-color-name="Neon Green"
+              style="--swatch: #00ffaa"
+              aria-label="Neon Green"
+              aria-pressed="true"
+              title="Neon Green"
+            ></button>
+            <label class="custom-color" title="Choose a custom color">
+              <span aria-hidden="true">+</span>
+              <input
+                type="color"
+                id="custom-color"
+                value="#00ffaa"
+                aria-label="Custom slime color"
+              />
+            </label>
+          </div>
+        </div>
+        <div class="material-row">
+          <div class="flavors" role="group" aria-label="Material">
+            <button type="button" data-material="slime" aria-pressed="true">Slime</button>
+            <button type="button" data-material="cheese" aria-pressed="false">Cheese</button>
+            <button type="button" data-material="clear" aria-pressed="false">Clear</button>
+          </div>
+          <div class="slider-control">
+            <label for="viscosity"
+              >Viscosity <output id="viscosity-output" for="viscosity">88%</output></label
+            >
+            <input type="range" id="viscosity" min="0" max="100" value="88" style="--value: 88%" />
+          </div>
+          <div class="slider-control">
+            <label for="stickiness"
+              >Stickiness <output id="stickiness-output" for="stickiness">96%</output></label
+            >
+            <input type="range" id="stickiness" min="0" max="100" value="96" style="--value: 96%" />
+          </div>
+          <button
+            type="button"
+            id="pause"
+            class="pause-button"
+            aria-label="Pause animation"
+            aria-pressed="false"
+          >
+            Pause
+          </button>
+        </div>
+      </section>
+
+      <div class="bottom-left" data-goo-ui>
+        <p id="interaction-hint">Pull the slime. Move the container.</p>
+        <span id="mode-hint">A little gravity, then let it settle.</span>
+      </div>
+      <div class="bottom-right" data-goo-ui>
+        <span id="motion-label">LIVE SLIME</span>
+        <button type="button" id="drips" aria-pressed="false">Drips off</button>
+        <button type="button" id="pour">Pour more</button>
+        <button type="button" id="reset" title="Reset the slime">Reset ↺</button>
+      </div>
+      <div class="scroll-cue" data-goo-ui>
+        <span>A LITTLE SLIME FOR YOUR WEBSITE</span>
+        <a href="#component" aria-label="Explore the component">↓</a>
+      </div>
+    </slimey-goo>
+
+    <section class="component-section" id="component" aria-labelledby="component-title">
+      <div class="section-intro">
+        <p class="eyebrow">MAKE ROOM FOR SLIME</p>
+        <h2 id="component-title">Put a little<br />slime on it.</h2>
+        <p>
+          A reusable web component with real fluid motion, mouse interaction, and a color for every
+          mood. Let it flow around your page, or turn the words themselves into slime.
+        </p>
+        <div class="actions">
+          <button type="button" id="download">
+            Get component <span aria-hidden="true">↓</span>
+          </button>
+          <button type="button" id="copy" class="secondary">
+            Copy example <span aria-hidden="true">↗</span>
+          </button>
+        </div>
+      </div>
+      <div class="code-card">
+        <div class="code-heading"><span>JUST ADD SLIME</span><span>HTML</span></div>
+        <pre><code id="code-example">&lt;slimey-goo
+  mode="drip"
+  color="#c4ff00"
+  viscosity="0.88"&gt;
+
+  &lt;h1 data-goo data-goo-solid="text"&gt;
+    Slime Time.
+  &lt;/h1&gt;
+
+&lt;/slimey-goo&gt;</code></pre>
+        <p>The example follows your current settings.</p>
+      </div>
+    </section>
+    <section class="notes" aria-label="Ways to play">
+      <article>
+        <span>01</span>
+        <h3>Pull something stretchy.</h3>
+        <p>
+          Grab the slime and stretch it. Move the container beneath it. Turn drips on when you want
+          a little more.
+        </p>
+      </article>
+      <article>
+        <span>02</span>
+        <h3>Give your words a wiggle.</h3>
+        <p>
+          Switch to Slime Text to turn the letters into the material. Zero gravity keeps the words
+          suspended while you stretch and play.
+        </p>
+      </article>
+      <article>
+        <span>03</span>
+        <h3>Make it your kind of slime.</h3>
+        <p>
+          Pick a color, change the feel, and pause whenever you like. Motion follows your system
+          preferences.
+        </p>
+      </article>
+    </section>
+    <footer class="page-footer">
+      <a class="wordmark" href="https://github.com/loktar00"
+        >loktar00<span aria-hidden="true">↗</span></a
+      >
+      <span>STAY CURIOUS. GET SLIMEY.</span>
+      <span>2026</span>
+    </footer>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
